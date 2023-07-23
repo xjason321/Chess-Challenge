@@ -59,7 +59,7 @@ namespace ChessChallenge.Application
             tokenCount = GetTokenCount();
             Warmer.Warm();
 
-            Tester.Run();
+            //Tester.RunPerft();
 
             moveGenerator = new();
             boardUI = new BoardUI();

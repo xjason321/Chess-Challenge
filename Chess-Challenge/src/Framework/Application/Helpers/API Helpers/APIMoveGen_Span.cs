@@ -5,7 +5,7 @@ using static ChessChallenge.Chess.PrecomputedMoveData;
 namespace ChessChallenge.Application.APIHelpers
 {
 
-    public class APIMoveGen_Span
+    public class APIMoveGen
     {
 
         public const int MaxMoves = 218;
@@ -46,7 +46,7 @@ namespace ChessChallenge.Application.APIHelpers
         // Otherwise it will have 1s everywhere.
         ulong moveTypeMask;
 
-        public APIMoveGen_Span()
+        public APIMoveGen()
         {
             board = new Board();
         }

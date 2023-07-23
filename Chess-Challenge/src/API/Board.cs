@@ -9,7 +9,6 @@ namespace ChessChallenge.API
 	{
 		readonly Chess.Board board;
 		readonly APIMoveGen moveGen;
-		readonly APIMoveGen_Span moveGen_Span;
 
 		readonly HashSet<ulong> repetitionHistory;
 		readonly PieceList[] allPieceLists;
@@ -29,7 +28,6 @@ namespace ChessChallenge.API
 		{
 			this.board = board;
 			moveGen = new APIMoveGen();
-			moveGen_Span = new APIMoveGen_Span();
             cachedLegalMoves = Array.Empty<Move>();
 			cachedLegalCaptureMoves = Array.Empty<Move>();
 			movesDest = new Move[MoveGenerator.MaxMoves];
@@ -109,31 +107,12 @@ namespace ChessChallenge.API
 			board.UnmakeNullMove();
 		}
 
-		/// <summary>
-		/// Gets an array of the legal moves in the current position.
-		/// Can choose to get only capture moves with the optional 'capturesOnly' parameter.
-		/// </summary>
-		public Move[] GetLegalMoves(bool capturesOnly = false)
-		{
-			if (capturesOnly)
-			{
-				return GetLegalCaptureMoves();
-			}
-
-			if (!hasCachedMoves)
-			{
-				cachedLegalMoves = moveGen.GenerateMoves(board, includeQuietMoves: true);
-				hasCachedMoves = true;
-			}
-
-			return cachedLegalMoves;
-		}
 
         /// <summary>
         /// Gets an array of the legal moves in the current position.
         /// Can choose to get only capture moves with the optional 'capturesOnly' parameter.
         /// </summary>
-        public Move[] GetLegalMovesV2(bool capturesOnly = false)
+        public Move[] GetLegalMoves(bool capturesOnly = false)
         {
             if (capturesOnly)
             {
@@ -143,7 +122,7 @@ namespace ChessChallenge.API
             if (!hasCachedMoves)
             {
 				Span<Move> moveSpan = movesDest.AsSpan();
-                moveGen_Span.GenerateMoves(ref moveSpan, board, includeQuietMoves: true);
+                moveGen.GenerateMoves(ref moveSpan, board, includeQuietMoves: true);
 				cachedLegalMoves = moveSpan.ToArray();
                 hasCachedMoves = true;
             }
@@ -152,12 +131,12 @@ namespace ChessChallenge.API
         }
 
         /// <summary>
-        /// Fills the given move span with legal moves, and slices it to the correct size
+        /// Fills the given move span with legal moves and slices it to the correct size.
         /// Can choose to get only capture moves with the optional 'capturesOnly' parameter.
         /// </summary>
         public void PopulateWithLegalMoves(ref Span<Move> moveList, bool capturesOnly = false)
         {
-			moveGen_Span.GenerateMoves(ref moveList,board, !capturesOnly);
+			moveGen.GenerateMoves(ref moveList,board, !capturesOnly);
         }
 
 
@@ -166,8 +145,9 @@ namespace ChessChallenge.API
 			if (!hasCachedCaptureMoves)
 			{
                 Span<Move> moveSpan = movesDest.AsSpan();
-                cachedLegalCaptureMoves = moveGen.GenerateMoves(board, includeQuietMoves: false);
-				hasCachedCaptureMoves = true;
+                moveGen.GenerateMoves(ref moveSpan, board, includeQuietMoves: false);
+				cachedLegalCaptureMoves = moveSpan.ToArray();
+                hasCachedCaptureMoves = true;
 			}
 			return cachedLegalCaptureMoves;
 		}
