@@ -277,7 +277,8 @@ namespace ChessChallenge.Application
 
         static ulong Search(int depth)
         {
-            var moves = boardAPI.GetLegalMoves();
+            Span<API.Move> moves = stackalloc API.Move[128];
+            boardAPI.PopulateWithLegalMoves(ref moves);
 
             if (depth == 1)
             {
