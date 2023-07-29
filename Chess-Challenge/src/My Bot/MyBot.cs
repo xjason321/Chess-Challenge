@@ -58,12 +58,11 @@ public class MyBot : IChessBot
                         v += 900;
                         break;
                     case PieceType.King:
-                        v += 10000000;
+                        v += 1000;
                         break;
                 }
-                if(piece.IsPawn){
-                    v -= (Math.Abs(3.5 - piece.Square.Rank) + Math.Abs(3.5 - piece.Square.File))*10;
-                }
+                
+                v -= (Math.Abs(3.5 - piece.Square.Rank) + Math.Abs(3.5 - piece.Square.File))*5;
                 
                 value += piece.IsWhite ? v : -v;
             }
